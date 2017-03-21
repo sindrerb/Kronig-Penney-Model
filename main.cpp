@@ -1,5 +1,6 @@
 #include <iostream>
 #include <kronigpenney.h>
+#include <wavestate.h>
 #include <vec3.h>
 #include <math.h>
 #include <fstream>
@@ -7,13 +8,14 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-
     string cellFile = "CELLFILE";
     string basisFile = "BASISFILE";
+    string waveFile = "WAVEFILE";
     KronigPenney KP;
 
     KP.setUnitCell(cellFile);
-    KP.setWaveBasis(basisFile,2000);
+    KP.setWaveBasis(basisFile,200);
+    KP.setWaveStates(waveFile,vec3(0,0,0));
 //    vec3 a,b,c;
 //    a = vec3(1,0,0);
 //    b = vec3(cos(gamma),sin(gamma),0);

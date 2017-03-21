@@ -6,6 +6,9 @@
 #include <iostream>
 #include <fstream>
 #include <math.h>
+#include <wavestate.h>
+#include <vector>
+
 class KronigPenney
 {
 
@@ -16,7 +19,8 @@ public:
     void setReciprocalSpace(vec3 a, vec3 b,vec3 c);
     
     void setWaveBasis(std::string BASISFILE,double energyCutOff);
-    void setWaveStates(std::string WAVEFILE);
+
+    void setWaveStates(std::string WAVEFILE, vec3 kPoint);
     
     
     vec3 aReal() const;
@@ -54,6 +58,10 @@ private:
     //WaveBasis
     int m_waveBasisLength;
     std::vector<vec3> m_waveBasis;
+
+    //WaveStates
+    int m_waveStatesLength;
+    std::vector<waveState> m_waveStates;
 
 
 

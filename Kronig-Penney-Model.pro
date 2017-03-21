@@ -5,8 +5,10 @@ CONFIG -= qt
 
 SOURCES += main.cpp \
     vec3.cpp \
-    kronigpenney.cpp
+    kronigpenney.cpp \
+    wavestate.cpp
 
 HEADERS += \
     vec3.h \
-    kronigpenney.h
+    kronigpenney.h \
+    wavestate.h

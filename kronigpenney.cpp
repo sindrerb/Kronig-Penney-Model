@@ -3,6 +3,7 @@
 
 KronigPenney::KronigPenney() {
     m_waveBasisLength = 0;
+    m_waveStatesLength = 0;
 }
 
 void KronigPenney::setUnitCell(std::__cxx11::string CELLFILE) {
@@ -74,10 +75,13 @@ void KronigPenney::setWaveBasis(std::__cxx11::string BASISFILE, double energyCut
                     //std::cout << G << "\t" << energy;
                     if(energy < energyCutOff){
                         FILE << G.x() <<"\t" << G.y() << "\t" << G.z() << "\n";
+                        m_waveBasis.push_back(G);
+                        m_waveBasisLength ++;
                     }
                 }
             }
         }
+
     }else{
         while(BASIS >> x >> y >> z){
             m_waveBasis.push_back(vec3(x,y,z));
@@ -87,20 +91,67 @@ void KronigPenney::setWaveBasis(std::__cxx11::string BASISFILE, double energyCut
     }
 }
 
-//void KronigPenney::setWaveStates(std::__cxx11::string WAVEFILE,vec3 kPoint) {
-//    std::fstream WAVES(WAVEFILE, std::ios_base::in);
+void KronigPenney::setWaveStates(std::__cxx11::string WAVEFILE, vec3 kPoint) {
+    std::fstream WAVES(WAVEFILE, std::ios_base::in);
 
-//    if(!WAVES.good()){
-//        std::cout << "yes" << std::endl;
-//        WAVES.close();
-//        std::vector<double> weights;
-//        weights = std::vector<double>(m_waveBasisLength, 0.0);
+    double energy;
+    std::vector<double> weights;
 
-//    }else{
-//        std::cout << "no" << std::endl;
-//        WAVES.close();
-//    }
-//}
+    if(!WAVES.good()){
+        WAVES.close();
+        m_waveStates.clear();
+        m_waveStatesLength = 0;
+
+        std::string NewFile = WAVEFILE;
+        std::ofstream FILE(NewFile);
+        vec3 totalVector;
+        for(int i = 0; i<m_waveBasisLength; i++) {
+            totalVector = kPoint+m_waveBasis[i];
+            energy = (HBAR_C*HBAR_C*totalVector.lengthSquared()/(2*ELECTRON_MASS));
+
+            FILE << kPoint.x() << "\t" << kPoint.y() << "\t" << kPoint.z() ;
+            FILE << "\t" << energy;
+
+            weights = std::vector<double>(m_waveBasisLength, 0);
+            weights[i] = 1;
+
+            for(int j=0; j<m_waveBasisLength; j++) {
+                FILE << "\t" << weights[j] ;
+            }
+            FILE << "\n";
+
+            m_waveStates.push_back(waveState(kPoint,energy,weights));
+            m_waveStatesLength ++;
+        }
+        FILE.close();
+    }else{
+        m_waveStates.clear();
+        m_waveStatesLength = 0;
+        double x,y,z;
+        double weight;
+        vec3 kPointFromFile;
+        while(WAVES) {
+            WAVES >> x >> y >> z;
+            WAVES >> energy;
+            kPointFromFile = vec3(x,y,z);
+
+            weights.clear();
+            for(int i = 0; i<m_waveBasisLength; i++) {
+                WAVES >> weight;
+                weights.push_back(weight);
+            }
+            if( (kPointFromFile-kPoint).length() == 0) {
+                m_waveStates.push_back(waveState(kPoint,energy,weights));
+                m_waveStatesLength ++;
+            }
+        }
+        m_waveStates.pop_back();
+        m_waveStatesLength --;
+
+        WAVES.close();
+    }
+
+}
 
 vec3 KronigPenney::aReal() const {
     return m_aReal;
