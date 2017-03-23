@@ -8,6 +8,7 @@
 #include <math.h>
 #include <wavestate.h>
 #include <vector>
+#include <complex>
 
 class KronigPenney
 {
@@ -19,10 +20,14 @@ public:
     void setReciprocalSpace(vec3 a, vec3 b,vec3 c);
     
     void setWaveBasis(std::string BASISFILE,double energyCutOff);
-
     void setWaveStates(std::string WAVEFILE, vec3 kPoint);
     
+    double greens(double energy);
+
+    void eigenValues(vec3 kPoint, double energyMin, double energyMax);
+
     
+
     vec3 aReal() const;
     void setAReal(const vec3 &aReal);
     
@@ -47,10 +52,19 @@ public:
     vec3 cResiprocal() const;
     void setCResiprocal(const vec3 &cResiprocal);
 
+    double potential() const;
+    void setPotential(double potential);
+
 private:
+    //Caclulation parameters
+    double m_accuracy;
+    double m_beta;
+
     //Real cell parameters
     vec3 m_aReal,m_bReal,m_cReal;
     double m_cellVolume;
+
+    double m_potential;
 
     //Reciprocal cell parameters
     vec3 m_aResiprocal, m_bResiprocal, m_cResiprocal;
@@ -60,9 +74,11 @@ private:
     std::vector<vec3> m_waveBasis;
 
     //WaveStates
-    int m_waveStatesLength;
-    std::vector<waveState> m_waveStates;
+    int m_unperturbedStatesLength;
+    std::vector<waveState> m_unperturbedStates;
 
+    int m_perturbedStatesLength;
+    std::vector<waveState> m_perturbedStates;
 
 
     //CONSTANTS

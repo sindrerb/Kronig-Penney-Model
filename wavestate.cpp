@@ -9,10 +9,11 @@ waveState::waveState(int basisLenght) {
     m_weights = std::vector<double>(m_waveBasisLength, 0);
 }
 
-waveState::waveState(vec3 kPoint, double energy, std::vector<double> weights)
+waveState::waveState(vec3 kPoint, vec3 effectiveG, double energy, std::vector<double> weights)
 {
         m_weights = weights;
         m_k = kPoint;
+        m_G = effectiveG;
         m_energy = energy;
 }
 
@@ -62,4 +63,14 @@ vec3 waveState::getK() const
 void waveState::setK(const vec3 &value)
 {
     m_k = value;
+}
+
+vec3 waveState::getG() const
+{
+    return m_G;
+}
+
+void waveState::setG(const vec3 &G)
+{
+    m_G = G;
 }

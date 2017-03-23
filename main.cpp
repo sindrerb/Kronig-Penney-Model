@@ -13,25 +13,25 @@ int main(int argc, char *argv[])
     string waveFile = "WAVEFILE";
     KronigPenney KP;
 
+    int result;
     KP.setUnitCell(cellFile);
-    KP.setWaveBasis(basisFile,200);
-    KP.setWaveStates(waveFile,vec3(0,0,0));
-//    vec3 a,b,c;
-//    a = vec3(1,0,0);
-//    b = vec3(cos(gamma),sin(gamma),0);
-//    c = vec3(cos(beta),0,sin(beta));
+    KP.setWaveBasis(basisFile,20);
 
-//    cout << a.length() << endl;
-//    cout << b.length() << endl;
-//    cout << c.length() << endl;
-//    cout << (a+b).length() << endl;
-//    cout << (a-b).length() << endl;
-//    cout << (a+c).length() << endl;
-//    cout << (a-c).length() << endl;
-//    cout << (a+b+c).length() << endl;
-//    cout << (a-b+c).length() << endl;
-//    cout << (a+b+c).length() << endl;
-//    cout << (a-b-c).length() << endl;
+    vec3 k;
+    k = vec3(0,0,0);
+    KP.setWaveStates(waveFile,k);
+    k = vec3(0.1,0,0);
+    KP.setWaveStates(waveFile,k);
+
+    //Renaming original files
+    result = rename("WAVEFILE", "WAVEFILE_OLD");
+//    if(result == 0) {
+//        cout << "Success!" << endl;
+//    }else{
+//        cout << "Fail! you fucker!" << endl;
+//    }
+
+//    KP.eigenValues(k,-10.0,100.0);
 
     return 0;
 }

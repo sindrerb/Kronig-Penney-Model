@@ -9,7 +9,7 @@ class waveState
 public:
     waveState();
     waveState(int basisLenght);
-    waveState(vec3 kPoint, double energy, std::vector<double> weights);
+    waveState(vec3 kPoint, vec3 effectiveG, double energy, std::vector<double> weights);
 
     std::vector<double> weights() const;
     void setWeights(const std::vector<double> &weights);
@@ -26,6 +26,9 @@ public:
     vec3 getK() const;
     void setK(const vec3 &value);
 
+    vec3 getG() const;
+    void setG(const vec3 &G);
+
 private:
     //WaveBasis
     int m_waveBasisLength;
@@ -34,6 +37,7 @@ private:
     //EigenEnergy
     double m_energy;
     vec3 m_k;
+    vec3 m_G;
 };
 
 #endif // WAVESTATE_H
