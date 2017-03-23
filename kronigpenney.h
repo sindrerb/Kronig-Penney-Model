@@ -16,16 +16,27 @@ class KronigPenney
 public:
     KronigPenney();
 
-    void setUnitCell(std::string CELLFILE);
+    //Setting the environment
+    void setUnitCell(vec3 a, vec3 b,vec3 c);
     void setReciprocalSpace(vec3 a, vec3 b,vec3 c);
-    
-    void setWaveBasis(std::string BASISFILE,double energyCutOff);
-    void setWaveStates(std::string WAVEFILE, vec3 kPoint);
-    
+    void readCELLFILE(std::string CELLFILE);
+    void writeCELLFILE(std::string CELLFILE);
+
+    //Setting relevant wave basis for the
+    void setWaveBasis(double energyCutOff);
+    void readBASISFILE(std::string BASISFILE);
+    void writeBASISFILE(std::string BASISFILE);
+
+    //Set predefined eigenstates or generate initial states from the basis
+    void setWaveStates(vec3 kPoint);
+    void readWAVEFILE(std::string WAVEFILE, vec3 kPoint);
+    void writeWAVEFILE(std::string WAVEFILE, vec3 kPoint);
+
+    //Calculate new eigenenergies
     double greens(double energy);
+    void calculateEigenValues(vec3 kPoint, double energyMin, double energyMax);
 
-    void eigenValues(vec3 kPoint, double energyMin, double energyMax);
-
+    void
     
 
     vec3 aReal() const;

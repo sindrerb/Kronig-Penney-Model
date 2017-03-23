@@ -195,7 +195,6 @@ void KronigPenney::eigenValues(vec3 kPoint, double energyMin, double energyMax) 
     while (energy <= energyMax) {
         green = greens(energy);
         if (green <= greenCriteria && greenOld >= greenCriteria) {
-            std::cout << "FUCCING WANKER! I got some energy!" << std::endl;
             eigenEnergy = energy-(green-greenCriteria)/(green-greenOld)*energyStep;
             WAVES << kPoint.x() << "\t" << kPoint.y() << "\t" << kPoint.z() << "\t" << eigenEnergy;
 

@@ -18,10 +18,9 @@ int main(int argc, char *argv[])
     KP.setWaveBasis(basisFile,20);
 
     vec3 k;
-    k = vec3(0,0,0);
-    KP.setWaveStates(waveFile,k);
     k = vec3(0.1,0,0);
     KP.setWaveStates(waveFile,k);
+//    KP.setWaveStates(waveFile,k);
 
     //Renaming original files
     result = rename("WAVEFILE", "WAVEFILE_OLD");
@@ -31,7 +30,7 @@ int main(int argc, char *argv[])
 //        cout << "Fail! you fucker!" << endl;
 //    }
 
-//    KP.eigenValues(k,-10.0,100.0);
+    KP.eigenValues(k,-10.0,300.0);
 
     return 0;
 }
