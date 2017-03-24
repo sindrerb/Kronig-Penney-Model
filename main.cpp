@@ -8,29 +8,40 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+    double energyCutOff = 10; //eV
     string cellFile = "CELLFILE";
     string basisFile = "BASISFILE";
     string waveFile = "WAVEFILE";
+    string oldFile = waveFile+"_OLD";
+    string resultFile = "RESULTFILE";
+
     KronigPenney KP;
 
     int result;
-    KP.setUnitCell(cellFile);
-    KP.setWaveBasis(basisFile,20);
+
+    KP.initializeCELL(cellFile);
+
+    bool basis = KP.readBASISFILE(basisFile);
+    if(!basis){
+        KP.setWaveBasis(energyCutOff);
+        KP.writeBASISFILE(basisFile);
+    }
 
     vec3 k;
-    k = vec3(0.1,0,0);
-    KP.setWaveStates(waveFile,k);
-//    KP.setWaveStates(waveFile,k);
 
-    //Renaming original files
-    result = rename("WAVEFILE", "WAVEFILE_OLD");
-//    if(result == 0) {
-//        cout << "Success!" << endl;
-//    }else{
-//        cout << "Fail! you fucker!" << endl;
-//    }
 
-    KP.eigenValues(k,-10.0,300.0);
+    //loop over desired k-points
+    for(double h = 0; h<=0.5; h+=0.01){
+        k = h*KP.aResiprocal();
+
+        bool states = KP.readWAVEFILE(waveFile,k);
+        if(!states){
+            KP.setWaveStates(k);
+            KP.writeWAVEFILE(waveFile,k);
+        }
+        KP.calculateEigenValues(k,-10.0,300.0);
+        KP.writeRESULTFILE(resultFile);
+    }
 
     return 0;
 }
