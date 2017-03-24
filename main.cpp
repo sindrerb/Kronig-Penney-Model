@@ -8,7 +8,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    double energyCutOff = 10; //eV
+    double energyCutOff = 100; //eV
     string cellFile = "CELLFILE";
     string basisFile = "BASISFILE";
     string waveFile = "WAVEFILE";
@@ -28,7 +28,6 @@ int main(int argc, char *argv[])
     }
 
     vec3 k;
-
 
     //loop over desired k-points
     for(double h = 0; h<=0.5; h+=0.01){

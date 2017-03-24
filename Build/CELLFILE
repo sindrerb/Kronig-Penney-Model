@@ -1,8 +1,8 @@
 #CELLPARAMETERS [Angstroms] 
-1	0	0
-0	1	0
-0	0	1
+4.29	0	0
+0	0.01	0
+0	0	0.01
 
 Potential [eV], Location (a,b,c)
 
--1	0.0000	0.0000	0.0000
+-0.05	0.0000	0.0000	0.0000

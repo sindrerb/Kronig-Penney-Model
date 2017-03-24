@@ -383,7 +383,7 @@ void KronigPenney::calculateEigenValues(vec3 kPoint, double energyMin, double en
     greenOld = -m_accuracy;
     green = 0;
     energy = energyMin;
-    energyStep = 0.002;
+    energyStep = 0.001;
 
     double eigenEnergy;
     while (energy <= energyMax) {
@@ -399,13 +399,15 @@ void KronigPenney::calculateEigenValues(vec3 kPoint, double energyMin, double en
 
 void KronigPenney::findPerturbedStates(double eigenEnergy, vec3 kPoint) {
     vec3 effectiveG;
-    double weight, normalizedWeight, basisWeight, normalization;
+    std::complex<double> weight, epsilon;
+    epsilon = 1i*m_accuracy;
+    double normalizedWeight, basisWeight, normalization;
     std::vector<double> weights, normalizedWeights, basisWeights;
 
     for(int i = 0; i<m_unperturbedStatesLength; i++) {
-        weight = exp(-m_beta*m_unperturbedStates[i].getG().lengthSquared()/2.0)/(eigenEnergy-m_unperturbedStates[i].energy());
-        weights.push_back(weight);
-        normalization += weight*weight;
+        weight = exp(-m_beta*m_unperturbedStates[i].getG().lengthSquared()/2.0)/(eigenEnergy+epsilon-m_unperturbedStates[i].energy());
+        weights.push_back(weight.real());
+        normalization += weight.real()*weight.real();
     }
     //NORMALIZE
     for(int i = 0; i<m_unperturbedStatesLength; i++) {
