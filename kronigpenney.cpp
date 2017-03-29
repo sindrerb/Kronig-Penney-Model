@@ -58,7 +58,7 @@ void KronigPenney::writeCELLFILE(std::__cxx11::string CELLFILE) {
     std::string NewFile = CELLFILE;
     std::ofstream FILE(NewFile);
     FILE << "#CELLPARAMETERS [Angstroms] \n";
-    FILE << "1\t0\t0\n0\t1\t0\n0\t0\t1\n\nPotential [eV], Location (a,b,c)\n\n-1\t0.0000\t0.0000\t0.0000\n";
+    FILE << "1\t0\t0\n0\t1\t0\n0\t0\t1";
     FILE.close();
 }
 
