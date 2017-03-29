@@ -2,7 +2,7 @@
 
 
 KronigPenney::KronigPenney() {
-    m_accuracy = 1e-5;
+    m_accuracy = 1e-7;
     m_waveBasisLength = 0;
     m_unperturbedStatesLength = 0;
     m_perturbedStatesLength = 0;
@@ -22,6 +22,7 @@ void KronigPenney::setReciprocalSpace(vec3 a, vec3 b, vec3 c) {
 }
 
 bool KronigPenney::readCELLFILE(std::__cxx11::string CELLFILE) {
+
     std::string dummystring;
     std::fstream CELL(CELLFILE , std::ios_base::in);
 
@@ -30,7 +31,7 @@ bool KronigPenney::readCELLFILE(std::__cxx11::string CELLFILE) {
         return false;
     }else{
         CELL >> dummystring >> dummystring;
-        double x,y,z, potential;
+        double x,y,z;
         vec3 a,b,c;
         CELL >> x >> y >> z;
         a = vec3(x,y,z);
@@ -38,12 +39,8 @@ bool KronigPenney::readCELLFILE(std::__cxx11::string CELLFILE) {
         b = vec3(x,y,z);
         CELL >> x >> y >> z;
         c = vec3(x,y,z);
-        CELL >> dummystring >> dummystring >> dummystring >> dummystring;
-        CELL >> potential;
-        CELL.close();
 
         setUnitCell(a,b,c);
-        setPotential(potential);
 
         m_cellVolume = m_aReal.dot(m_bReal.cross(m_cReal));
         setCellVolume(m_cellVolume);
@@ -202,8 +199,7 @@ bool KronigPenney::readWAVEFILE(std::__cxx11::string WAVEFILE, vec3 kPoint) {
                 WAVES >> weight;
                 weights.push_back(weight);
             }
-
-            if( (kPointFromFile-kPoint).length() == 0) {
+            if( (kPointFromFile-kPoint).length() < m_accuracy) {
                 for(int j = 0; j<m_waveBasisLength; j++) {
                     effectiveG += m_waveBasis[j]*weights[j];
                 }
@@ -249,141 +245,26 @@ void KronigPenney::writeWAVEFILE(std::__cxx11::string WAVEFILE, vec3 kPoint) {
     std::cout << "Wrote a WAVEFILE" << std::endl;
 }
 
-
-
-//void KronigPenney::setWaveBasis(std::__cxx11::string BASISFILE, double energyCutOff)
-//{
-//    std::fstream BASIS(BASISFILE, std::ios_base::in);
-//    double x,y,z, cutOffG;
-//    int limA, limB, limC;
-
-//    if(!BASIS.good()){
-//        BASIS.close();
-//        std::string NewFile = BASISFILE;
-//        std::ofstream FILE(NewFile);
-
-//        cutOffG = sqrt(2*ELECTRON_MASS_ENERGY*energyCutOff/(HBAR_C*HBAR_C));
-//        m_beta = -2.0*log(m_accuracy)/(cutOffG*cutOffG);
-//        limA = int(cutOffG/m_aResiprocal.length());
-//        limB = int(cutOffG/m_bResiprocal.length());
-//        limC = int(cutOffG/m_cResiprocal.length());
-////        std::cout << limA << "\t" << limB << "\t" << limC<< std::endl;
-//        vec3 G;
-
-//        double energy;
-//        for(int l = -limC; l<=limC; l++){
-//            for(int m = -limB; m<=limB; m++){
-//                for(int n = -limA; n<=limA; n++){
-//                    G=n*m_aResiprocal+m*m_bResiprocal+l*m_cResiprocal;
-//                    energy = HBAR_C*HBAR_C*G.lengthSquared()/(2*ELECTRON_MASS_ENERGY);
-//                    //std::cout << G << "\t" << energy;
-//                    if(energy < energyCutOff){
-//                        FILE << G.x() <<"\t" << G.y() << "\t" << G.z() << "\n";
-//                        m_waveBasis.push_back(G);
-//                        m_waveBasisLength ++;
-//                    }
-//                }
-//            }
-//        }
-
-//    }else{
-//        while(BASIS >> x >> y >> z){
-//            m_waveBasis.push_back(vec3(x,y,z));
-//            m_waveBasisLength ++;
-//        }
-//        BASIS.close();
-//    }
-//}
-
-//void KronigPenney::setWaveStates(std::__cxx11::string WAVEFILE, vec3 kPoint) {
-//    std::fstream WAVES(WAVEFILE, std::ios_base::in);
-
-//    double energy;
-//    std::vector<double> weights;
-
-//    if(!WAVES.good()){ //If kPoint is not contained in file
-//        WAVES.close();
-//        m_unperturbedStates.clear();
-//        m_unperturbedStatesLength = 0;
-
-//        std::string NewFile = WAVEFILE;
-//        std::ofstream FILE(NewFile);
-//        vec3 totalVector;
-//        for(int i = 0; i<m_waveBasisLength; i++) {
-//            totalVector = kPoint+m_waveBasis[i];
-//            energy = (HBAR_C*HBAR_C*totalVector.lengthSquared()/(2*ELECTRON_MASS_ENERGY));
-
-//            FILE << kPoint.x() << "\t" << kPoint.y() << "\t" << kPoint.z() ;
-//            FILE << "\t" << energy;
-
-//            weights = std::vector<double>(m_waveBasisLength, 0);
-//            weights[i] = 1;
-
-//            for(int j=0; j<m_waveBasisLength; j++) {
-//                FILE << "\t" << weights[j] ;
-//            }
-//            FILE << "\n";
-
-//            m_unperturbedStates.push_back(waveState(kPoint,m_waveBasis[i],energy,weights));
-//            m_unperturbedStatesLength ++;
-//        }
-//        FILE.close();
-//    }else{
-//        m_unperturbedStates.clear();
-//        m_unperturbedStatesLength = 0;
-//        double x,y,z;
-//        double weight;
-//        vec3 kPointFromFile, effectiveG;
-//        while(WAVES) {
-//            WAVES >> x >> y >> z;
-//            WAVES >> energy;
-//            kPointFromFile = vec3(x,y,z);
-
-//            weights.clear();
-//            for(int i = 0; i<m_waveBasisLength; i++) {
-//                WAVES >> weight;
-//                weights.push_back(weight);
-//            }
-//            if( (kPointFromFile-kPoint).length() == 0) {
-//                for(int j = 0; j<m_waveBasisLength; j++) {
-//                    effectiveG += m_waveBasis[j]*weights[j];
-//                }
-//                m_unperturbedStates.push_back(waveState(kPoint,effectiveG,energy,weights));
-//                m_unperturbedStatesLength ++;
-//            }
-//        }
-//        m_unperturbedStates.pop_back();
-//        m_unperturbedStatesLength --;
-
-//        WAVES.close();
-
-////        if(m_unperturbedStates == 0) {
-////            //DO SOME FANCY SHIT
-////        }
-//    }
-
-//}
-
 double KronigPenney::greens(double energy) {
     std::complex<double> sum, epsilon;
     sum = 0;
     epsilon = 1i*m_accuracy;
     for (int i = 0; i<m_unperturbedStatesLength; i++) {
         //std::cout << exp(-m_beta*m_unperturbedStates[i].getG().lengthSquared()*log(m_accuracy)/2.0) << std::endl;
-        sum += exp(-m_beta*m_unperturbedStates[i].getG().lengthSquared()/2.0)/(energy+epsilon-m_unperturbedStates[i].energy());
+        sum += 1.0/(energy+epsilon-m_unperturbedStates[i].energy()); //exp(-m_beta*m_unperturbedStates[i].getG().lengthSquared()/2.0)
     }
     return sum.real();
 }
 
-void KronigPenney::calculateEigenValues(vec3 kPoint, double energyMin, double energyMax) {
+void KronigPenney::calculateEigenValues(vec3 kPoint, double energyMin, double energyMax, double potential, double volume) {
     m_perturbedStates.clear();
     m_perturbedStatesLength = 0;
     double energy, energyStep, green, greenOld, greenCriteria;
-    greenCriteria = m_cellVolume/m_potential;
+    greenCriteria = volume/potential;
     greenOld = -m_accuracy;
     green = 0;
     energy = energyMin;
-    energyStep = 0.001;
+    energyStep = 0.0001;
 
     double eigenEnergy;
     while (energy <= energyMax) {
@@ -402,10 +283,11 @@ void KronigPenney::findPerturbedStates(double eigenEnergy, vec3 kPoint) {
     std::complex<double> weight, epsilon;
     epsilon = 1i*m_accuracy;
     double normalizedWeight, basisWeight, normalization;
+    normalization = 0;
     std::vector<double> weights, normalizedWeights, basisWeights;
 
     for(int i = 0; i<m_unperturbedStatesLength; i++) {
-        weight = exp(-m_beta*m_unperturbedStates[i].getG().lengthSquared()/2.0)/(eigenEnergy+epsilon-m_unperturbedStates[i].energy());
+        weight = 1.0/(eigenEnergy+epsilon-m_unperturbedStates[i].energy()); //exp(-m_beta*m_unperturbedStates[i].getG().lengthSquared()/2.0)
         weights.push_back(weight.real());
         normalization += weight.real()*weight.real();
     }
@@ -517,6 +399,16 @@ double KronigPenney::potential() const
 void KronigPenney::setPotential(double potential)
 {
     m_potential = potential;
+}
+
+double KronigPenney::potentialVolume() const
+{
+    return m_potentialVolume;
+}
+
+void KronigPenney::setPotentialVolume(double potentialVolume)
+{
+    m_potentialVolume = potentialVolume;
 }
 
 

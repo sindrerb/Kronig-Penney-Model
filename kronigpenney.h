@@ -36,7 +36,7 @@ public:
 
     //Calculate new eigenenergies
     double greens(double energy);
-    void calculateEigenValues(vec3 kPoint, double energyMin, double energyMax);
+    void calculateEigenValues(vec3 kPoint, double energyMin, double energyMax, double potential, double volume);
 
     void findPerturbedStates(double eigenEnergy, vec3 kPoint);
     void writeRESULTFILE(std::string RESULTFILE);
@@ -69,6 +69,9 @@ public:
     double potential() const;
     void setPotential(double potential);
 
+    double potentialVolume() const;
+    void setPotentialVolume(double potentialVolume);
+
 private:
     //Caclulation parameters
     double m_accuracy;
@@ -79,6 +82,7 @@ private:
     double m_cellVolume;
 
     double m_potential;
+    double m_potentialVolume;
 
     //Reciprocal cell parameters
     vec3 m_aResiprocal, m_bResiprocal, m_cResiprocal; //Å^-1

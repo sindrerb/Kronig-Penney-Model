@@ -8,12 +8,14 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    double energyCutOff = 100; //eV
+    double energyCutOff = 10; //eV
     string cellFile = "CELLFILE";
+    string potentialFile = "POTENTIALFILE";
     string basisFile = "BASISFILE";
     string waveFile = "WAVEFILE";
     string oldFile = waveFile+"_OLD";
     string resultFile = "RESULTFILE";
+
 
     KronigPenney KP;
 
@@ -27,20 +29,39 @@ int main(int argc, char *argv[])
         KP.writeBASISFILE(basisFile);
     }
 
-    vec3 k;
 
-    //loop over desired k-points
-    for(double h = 0; h<=0.5; h+=0.01){
-        k = h*KP.aResiprocal();
+    string dummystring;
+    fstream POTENTIAL(potentialFile, std::ios_base::in);
+    POTENTIAL >> dummystring >> dummystring >> dummystring >> dummystring;
 
-        bool states = KP.readWAVEFILE(waveFile,k);
-        if(!states){
-            KP.setWaveStates(k);
-            KP.writeWAVEFILE(waveFile,k);
+    double potential, x,y,z, volume;
+    vec3 a,b,c;
+    vec3 kPoint;
+    //while(POTENTIAL){ //LOOP OVER THE DEFINED POTENTIALS
+        POTENTIAL >> potential >> x >> y >> z;
+        cout << "Calculating with a potential of " << potential << " eV." << endl;
+        a = x*KP.aReal();
+        b = y*KP.bReal();
+        c = z*KP.cReal();
+        volume = a.dot(b.cross(c));
+
+        //loop over desired k-points
+        for(double h = 0; h<=0.5; h+=0.02){
+            kPoint = h*KP.aResiprocal();
+
+            bool states = KP.readWAVEFILE(waveFile,kPoint);
+            if(!states){
+                KP.setWaveStates(kPoint);
+                KP.writeWAVEFILE(waveFile,kPoint);
+            }
+            KP.calculateEigenValues(kPoint,-1,15.0, potential, volume);
+            KP.writeRESULTFILE(resultFile);
         }
-        KP.calculateEigenValues(k,-10.0,300.0);
-        KP.writeRESULTFILE(resultFile);
-    }
+        rename("WAVEFILE","WAVEFILE_OLD");
+        rename("RESULTFILE","WAVEFILE");
+        rename("WAVEFILE_OLD","WAVEFILE_ORIGINAL");
+    //}
+    POTENTIAL.close();
 
     return 0;
 }
