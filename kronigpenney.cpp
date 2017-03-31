@@ -251,7 +251,7 @@ double KronigPenney::greens(double energy) {
     epsilon = 1i*m_accuracy;
     for (int i = 0; i<m_unperturbedStatesLength; i++) {
         //std::cout << exp(-m_beta*m_unperturbedStates[i].getG().lengthSquared()*log(m_accuracy)/2.0) << std::endl;
-        sum += 1.0/(energy+epsilon-m_unperturbedStates[i].energy()); //exp(-m_beta*m_unperturbedStates[i].getG().lengthSquared()/2.0)
+        sum += exp(-m_beta*m_unperturbedStates[i].getG().lengthSquared()/2.0)/(energy+epsilon-m_unperturbedStates[i].energy()); //
     }
     return sum.real();
 }
@@ -287,7 +287,7 @@ void KronigPenney::findPerturbedStates(double eigenEnergy, vec3 kPoint) {
     std::vector<double> weights, normalizedWeights, basisWeights;
 
     for(int i = 0; i<m_unperturbedStatesLength; i++) {
-        weight = 1.0/(eigenEnergy+epsilon-m_unperturbedStates[i].energy()); //exp(-m_beta*m_unperturbedStates[i].getG().lengthSquared()/2.0)
+        weight = exp(-m_beta*m_unperturbedStates[i].getG().lengthSquared()/2.0)/(eigenEnergy+epsilon-m_unperturbedStates[i].energy()); //exp(-m_beta*m_unperturbedStates[i].getG().lengthSquared()/2.0)
         weights.push_back(weight.real());
         normalization += weight.real()*weight.real();
     }
@@ -326,7 +326,7 @@ void KronigPenney::writeRESULTFILE(std::__cxx11::string RESULTFILE){
         FILE << kPoint.x() << "\t" << kPoint.y() << "\t" << kPoint.z() ;
         FILE << "\t" << energy;
 
-        for(int j=0; j<m_waveBasisLength; j++) {
+        for(int j=0; j<m_waveBasisLengths; j++) {
             FILE << "\t" << weights[j] ;
         }
         FILE << "\n";
