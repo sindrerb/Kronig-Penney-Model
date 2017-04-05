@@ -326,7 +326,7 @@ void KronigPenney::writeRESULTFILE(std::__cxx11::string RESULTFILE){
         FILE << kPoint.x() << "\t" << kPoint.y() << "\t" << kPoint.z() ;
         FILE << "\t" << energy;
 
-        for(int j=0; j<m_waveBasisLengths; j++) {
+        for(int j=0; j<m_waveBasisLength; j++) {
             FILE << "\t" << weights[j] ;
         }
         FILE << "\n";
